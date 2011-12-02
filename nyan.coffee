@@ -812,8 +812,6 @@ serv = net.createServer (socket) ->
 	tnserv.on 'data', () ->
 
 	tnserv.on 'window_size', (size) ->
-		size.width = Math.floor( size.width / 2 )
-
 		min_row = 0
 		max_row = frames[0].length
 
@@ -826,7 +824,7 @@ serv = net.createServer (socket) ->
 
 		if max_col > size.width
 			min_col = (max_col - size.width) / 2
-			max_col = min_col + size.height
+			max_col = min_col + size.width
 		
 		socket.write("\033[H\033[2J\033[?25l")
 		doLoop = (frame) -> () ->
