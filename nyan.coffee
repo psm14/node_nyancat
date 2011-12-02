@@ -812,7 +812,7 @@ serv = net.createServer (socket) ->
     tnserv.on 'data', () ->
 
     tnserv.on 'window_size', ({width: width, height: height}) ->
-        
+
         # Prevent occasional runaway scrolling of terminal
         height -= 1
 
@@ -830,7 +830,7 @@ serv = net.createServer (socket) ->
             min_col = (max_col - width) / 2
             max_col = min_col + width
         
-        socket.write("\033[H\033[2J\033[?25l")
+        socket.write "\033[H\033[2J\033[?25l"
         doLoop = (frame) -> () ->
             if !socket.destroyed
                 for line in frames[frame][min_row...max_row]
