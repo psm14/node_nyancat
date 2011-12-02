@@ -841,4 +841,6 @@ serv = net.createServer (socket) ->
 
 		doLoop(0)()
 
-serv.listen(process.env.PORT || 3333)
+port = process.env.PORT || 3333
+serv.listen port
+console.log "Server started on port #{port}"
