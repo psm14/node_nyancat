@@ -805,38 +805,42 @@ output = ' '
 
 
 serv = net.createServer (socket) ->
-	tnserv = new telnet.TelnetServer socket, {naws: true}
+    tnserv = new telnet.TelnetServer socket, {naws: true}
 
-	# Crash fix
-	tnserv.echoOn = () -> false
-	tnserv.on 'data', () ->
+    # Crash fix
+    tnserv.echoOn = () -> false
+    tnserv.on 'data', () ->
 
-	tnserv.on 'window_size', (size) ->
-		min_row = 0
-		max_row = frames[0].length
+    tnserv.on 'window_size', ({width: width, height: height}) ->
+        
+        # Prevent occasional runaway scrolling of terminal
+        height -= 1
 
-		min_col = 0
-		max_col = frames[0][0].length
+        min_row = 0
+        max_row = frames[0].length
 
-		if max_row > size.height
-			min_row = (max_row - size.height) / 2
-			max_row = min_row + size.height
+        min_col = 0
+        max_col = frames[0][0].length
 
-		if max_col > size.width
-			min_col = (max_col - size.width) / 2
-			max_col = min_col + size.width
-		
-		socket.write("\033[H\033[2J\033[?25l")
-		doLoop = (frame) -> () ->
-			if !socket.destroyed
-				for line in frames[frame][min_row...max_row]
-					for char in line[min_col...max_col]
-						socket.write colors[char] + output
-					socket.write "\033[m\n"
-				socket.write "\033[H"
-				setTimeout doLoop( (frame + 1) % frames.length ), 90
+        if max_row > height
+            min_row = (max_row - height) / 2
+            max_row = min_row + height
 
-		doLoop(0)()
+        if max_col > width
+            min_col = (max_col - width) / 2
+            max_col = min_col + width
+        
+        socket.write("\033[H\033[2J\033[?25l")
+        doLoop = (frame) -> () ->
+            if !socket.destroyed
+                for line in frames[frame][min_row...max_row]
+                    for char in line[min_col...max_col]
+                        socket.write colors[char] + output
+                    socket.write "\033[m\n"
+                socket.write "\033[H"
+                setTimeout doLoop( (frame + 1) % frames.length ), 90
+
+        doLoop(0)()
 
 port = process.env.PORT || 3333
 serv.listen port
