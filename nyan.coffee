@@ -844,9 +844,5 @@ serv = net.createServer (socket) ->
 			socket.write "\033[H"			
 		
 		doLoop()()
-				
 
-
-		
-
-serv.listen 3333
+serv.listen(process.env.PORT || 3333)
