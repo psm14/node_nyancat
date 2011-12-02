@@ -831,9 +831,8 @@ serv = net.createServer (socket) ->
 		socket.write("\033[H\033[2J\033[?25l")
 		doLoop = (frame) -> () ->
 			if !socket.destroyed
-				for linenum in [min_row...max_row]
-					for charnum in [min_col...max_col]
-						char = frames[frame][linenum][charnum]
+				for line in frames[frame][min_row...max_row]
+					for char in line[min_col...max_col]
 						socket.write colors[char] + output
 					socket.write "\033[m\n"
 				socket.write "\033[H"
