@@ -829,20 +829,16 @@ serv = net.createServer (socket) ->
 			max_col = min_col + size.height
 		
 		socket.write("\033[H\033[2J\033[?25l")
-		doLoop = (frame = 0) -> () ->
+		doLoop = (frame) -> () ->
 			if !socket.destroyed
-				sendframe frame
-				setTimeout doLoop( (frame + 1) % frames.length ), 0.09 * 1000
-			else
+				for linenum in [min_row...max_row]
+					for charnum in [min_col...max_col]
+						char = frames[frame][linenum][charnum]
+						socket.write colors[char] + output
+					socket.write "\033[m\n"
+				socket.write "\033[H"
+				setTimeout doLoop( (frame + 1) % frames.length ), 90
 
-		sendframe = (frame) ->
-			for linenum in [min_row...max_row]
-				for charnum in [min_col...max_col]
-					char = frames[frame][linenum][charnum]
-					socket.write colors[char] + output
-				socket.write "\033[m\n"
-			socket.write "\033[H"			
-		
-		doLoop()()
+		doLoop(0)()
 
 serv.listen(process.env.PORT || 3333)
