@@ -1,4 +1,4 @@
-This will listen for telnet connections and send them nyancat.
+This is a port of ruby_nyancat (https://github.com/andatche/ruby_nyancat). It will listen for telnet connections and... send them nyancat.
 
 __Usage__
 
