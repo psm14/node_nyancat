@@ -809,7 +809,7 @@ serv = net.createServer (socket) ->
 
     # Crash fix
     tnserv.echoOn = () -> false
-    tnserv.on 'data', () ->
+    tnserv.on 'data', () -> socket.end()
 
     tnserv.on 'window_size', ({width: width, height: height}) ->
 
