@@ -4,6 +4,6 @@
   , "private": true
   , "dependencies": {
 		"coffee-script": ">= 0"
-		"telnet-protocol": ">= 0"
+		, "telnet-protocol": ">= 0"
   }
 }
