@@ -1,4 +1,4 @@
-net = require 'net'
+net    = require 'net'
 telnet = require 'telnet-protocol'
 
 frames = [ [
@@ -812,7 +812,7 @@ serv = net.createServer (socket) ->
 	tnserv.on 'data', () ->
 
 	tnserv.on 'window_size', (size) ->
-		size.width /= 2
+		size.width = Math.floor( size.width / 2 )
 
 		min_row = 0
 		max_row = frames[0].length
