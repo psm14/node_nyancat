@@ -807,11 +807,15 @@ output = ' '
 serv = net.createServer (socket) ->
     tnserv = new telnet.TelnetServer socket, {naws: true}
 
+    index = 0
+
     # Crash fix
     tnserv.echoOn = () -> false
     tnserv.on 'data', () -> socket.end()
 
     tnserv.on 'window_size', ({width: width, height: height}) ->
+        # Detect and exit when window size changes
+        myIndex = ++index
 
         # Prevent occasional runaway scrolling of terminal
         height -= 1
@@ -830,17 +834,26 @@ serv = net.createServer (socket) ->
             min_col = (max_col - width) / 2
             max_col = min_col + width
         
+        # Generate and cache output
+        cache = []
+        for frame in frames
+            cacheLine = ''
+            for line in frame[min_row...max_row]
+                for char in line[min_col...max_col]
+                    cacheLine += colors[char] + output
+                cacheLine += "\033[m\n"
+            cacheLine += "\033[H"
+            cache.push cacheLine
+
+        
         socket.write "\033[H\033[2J\033[?25l"
         doLoop = (frame) -> () ->
-            if !socket.destroyed
-                for line in frames[frame][min_row...max_row]
-                    for char in line[min_col...max_col]
-                        socket.write colors[char] + output
-                    socket.write "\033[m\n"
-                socket.write "\033[H"
+            if !socket.destroyed && index == myIndex
+                socket.write cache[frame]
                 setTimeout doLoop( (frame + 1) % frames.length ), 90
-
+        
         doLoop(0)()
+
 
 port = process.env.PORT || 3333
 serv.listen port
